@@ -6,7 +6,8 @@ import dash_html_components as dhtml
 
 import pandas as pd
 import os.path
-from whirl import *
+import plotly.graph_objs as go
+import whirl as wh
 
 app = dash.Dash()
 
@@ -16,8 +17,10 @@ filenames = {
     "library": "Library_Usage.csv"
 }
 data_dir = os.path.dirname(os.getcwd()) + "/data/"
+sf_dist_map = data_dir +\
+              "sf_supervisor_district_maps/sf_district_map_sfyimby.png"
 
-whirl = Whirl(data_dir, filenames)
+whirl = wh.Whirl(data_dir, filenames)
 
 # let's use a functional CSS dependency from the Dash tutorials; no need to
 # spend an inordinate amount of time to develop my own at the moment.
@@ -41,24 +44,43 @@ app.layout = dhtml.Div(children=[
     ),
 
     dcc.Markdown(
-        children="## Perception\n##### As people who work with data, sometimes we \
-        forget to see the greater picture of our work; the folks who end up \
+        children="## Perception\n##### As people who work with data, sometimes \
+        we forget to see the greater picture of our work; the folks who end up \
         reading our analyses do not always think like the way that we do. \
         As a result, often we forget that the easiest way to show someone \
         something is to tell them a story..."
     ),
 
     dcc.Graph(
-        id='example-graph',
-        figure={
+        id="supervisor_districts_park_scores",
+        figure = {
             'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+                go.Bar(
+                    x = [
+                    "SD 1", "SD 2", "SD 3", "SD 4", "SD 5", "SD 6", "SD 7",
+                    "SD 8", "SD 9", "SD 10", "SD 11"],
+                    y = wh.mean(whirl.parkgrp_df)["Score"].values.tolist(),
+                    text = wh.mean(whirl.parkgrp_df)["Score"].values.tolist()
+                )
             ],
             'layout': {
-                'title': 'Dash Data Visualization'}
-                }
-                )
-                ])
+                'title': "Average Park Scores by Supervisor District",
+                'yaxis': [0.5, 1]
+            }
+        }
+    ),
+
+    dcc.Markdown(
+        children="## Objective\n The objective of this exploration is to \
+        explore whether there is any correlation between better park scores \
+        and increased usage of libraries across supervisor districts in San \
+        Francisco."
+    ),
+
+    dhtml.Img(src="https://i.imgur.com/6mROVMa.png", title="SF Supervisor \
+District map, sourced from sfyimby.org")
+    ]
+)
+
 if __name__ == '__main__':
     app.run_server(debug=True)

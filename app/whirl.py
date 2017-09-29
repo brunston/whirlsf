@@ -32,3 +32,6 @@ class Whirl(object):
         self.parkcom_df = pd.merge(self.parkold_df, self.parknew_df, on="Park")
         # combined park data, grouped by supervisor district
         self.parkgrp_df = self.parkcom_df.groupby(["Supervisor District"])
+
+def mean(df):
+    return df.mean()
