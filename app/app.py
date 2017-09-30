@@ -65,21 +65,88 @@ app.layout = dhtml.Div(children=[
             ],
             'layout': {
                 'title': "Average Park Scores by Supervisor District",
-                'yaxis': [0.5, 1]
+                'yaxis': {
+                    'range': [0.85, 0.96]
+                }
             }
         }
     ),
 
     dcc.Markdown(
         children="## Objective\n The objective of this exploration is to \
-        explore whether there is any correlation between better park scores \
-        and increased usage of libraries across supervisor districts in San \
+        explore how geography plays roles across economics, education, and \
+        usage of libraries across supervisor districts in San \
         Francisco."
     ),
 
     dhtml.Img(src="https://i.imgur.com/6mROVMa.png", title="SF Supervisor \
-District map, sourced from sfyimby.org")
+District map, sourced from sfyimby.org"),
+
+    dcc.Markdown(
+        children="We can explore first the general income levels of each of \
+the supervisor districts in San Francisco, using both federal Census data \
+and city-sourced data, along with district-level education information to help \
+us understand the geography of both financial capital as well as educational \
+capital in San Francisco. \
+(Source: Phase 1 Socioeconomic Equity in the \
+City of San Francisco Policy Analysis Report, SF Board of Supervisors)"
+    ),
+
+    dcc.Graph(
+        id="income_and_education_percent_district_level",
+        figure = {
+            'data': [
+                {
+                    'x': whirl.sd_capital.index,
+                    'y': whirl.sd_capital["fin"],
+                    'type': 'bar',
+                    'name': 'Average Household Income',
+                    'yaxis': 'y1'
+                },
+                {
+                    'x': whirl.sd_capital.index,
+                    'y': whirl.sd_capital["edu"],
+                    'type': 'bar',
+                    'name': '% with college-level education',
+                    'yaxis': 'y2'
+                }
+            ],
+            'layout': {
+            'yaxis': {
+                'title': "t1",
+                'range': [30000,110000]
+            },
+            'yaxis2': {
+                'title': 't2',
+                'range': [0,100],
+                'overlaying': 'y',
+                'side': 'right'
+            }
+            }
+        }
+    ),
+
+    dcc.Markdown(
+        children="How might we use this information in conjunction with \
+        knowledge about how libraries are used by district?"
+    ),
+
+    dcc.Graph(
+        id="libraries_by_district",
+        figure = {
+            'data':
+                go.Bar(
+                    x = whirl.libmean_df.index,
+                    y = whirl.libmean_df["Total Checkouts"]
+                ),
+            'layout': {
+                'title': "Average total checkouts by patron per district, 2003-2016"
+            }
+        }
+    )
+
     ]
+
 )
 
 if __name__ == '__main__':
